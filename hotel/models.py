@@ -28,4 +28,12 @@ class Room(models.Model):
     def __str__(self):
         return self.name
 
+class HotelInfo(models.Model):
+    name = models.CharField(max_length=50)
+    description = models.TextField()
+    address = models.TextField()
+    phone_number = models.CharField(max_length=20)
+    photo = models.ImageField(blank=True, null=True)
 
+    def __str__(self):
+        return self.name
