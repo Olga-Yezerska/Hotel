@@ -125,24 +125,35 @@
                         </div>
 
                         <div class="col-12"><hr class="my-4" style="opacity: 0.1;"></div>
-
-                        <div class="col-lg-4 mb-3">
-                            <label class="text-muted small fw-bold text-uppercase">Category</label>
-                            {{ filter.form.category }}
-                        </div>
-
-                        <div class="col-lg-4 mb-3">
-                            <label class="text-muted small fw-bold text-uppercase">Price Range (Min - Max)</label>
-                            <div class="d-flex gap-2">
-                                {{ filter.form.price_min }}
-                                {{ filter.form.price_max }}
+                            <div class="row align-items-end"> <div class="col-lg-4 mb-4">
+                                <label class="d-block text-muted small fw-bold text-uppercase mb-2">Category</label>
+                                <div class="custom-select-wrapper">
+                                    {{ filter.form.category }}
+                                </div>
                             </div>
                         </div>
-
-                        <div class="col-lg-4 mb-3">
-                            <label class="text-muted small fw-bold text-uppercase">Availability</label>
-                            {{ filter.form.is_available }}
+                        
+                        <div class="col-lg-4 mb-4">
+                            <label class="d-block text-muted small fw-bold text-uppercase mb-2">Price Range (Min - Max)</label>
+                            <div class="d-flex gap-2">
+                                <div class="flex-fill">
+                                      {{ filter.form.price_min }}
+                                </div>
+                                <div class="flex-fill">
+                                    {{ filter.form.price_max }}
+                                </div>
+                            </div>
                         </div>
+                        
+                        <div class="col-lg-4 mb-4">    
+                            <label class="d-block text-muted small fw-bold text-uppercase mb-2">Availability</label>
+                            <div class="custom-select-wrapper">
+                                {{ filter.form.is_available }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>      
 
                         <div class="col-12 mb-4">
                             <label class="text-muted small fw-bold text-uppercase">Amenities</label>
