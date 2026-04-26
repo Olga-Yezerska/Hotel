@@ -22,8 +22,9 @@ def rooms(request):
     rooms = Room.objects.all()
     return render(request, 'hotel/rooms.html', {'rooms': rooms})
 
-def room_details(request):
-    return render(request, 'hotel/room-details.html')   
+def room_details(request, pk):
+    room = get_object_or_404(Room, pk=pk)
+    return render(request, 'hotel/room-details.html', {'room': room})   
 
 def booking_view(request):
     queryset = Room.objects.all()
