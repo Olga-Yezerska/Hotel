@@ -21,10 +21,8 @@ from hotel import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='home'),
-    path('about/', views.about, name='about_us'),
-    path('blog/', views.blog, name='blog'),
-    path('blog-details/', views.blog_details, name='blog_details'),
     path('contact/', views.contact, name='contact'),
     path('rooms/', views.rooms, name='rooms'),
     path('room-details/', views.room_details, name='room_details'),
+    path('booking/', views.booking_view, name='booking'),
 ]
