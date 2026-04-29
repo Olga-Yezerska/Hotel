@@ -26,12 +26,10 @@
 </head>
 
 <body>
-    <!-- Page Preloder -->
     <div id="preloder">
         <div class="loader"></div>
     </div>
 
-    <!-- Offcanvas Menu Section Begin -->
     <div class="offcanvas-menu-overlay"></div>
     <div class="canvas-open">
         <i class="icon_menu"></i>
@@ -40,13 +38,13 @@
         <div class="canvas-close">
             <i class="icon_close"></i>
         </div>
-        <div class="search-icon search-switch">
+        <div class="search-icon  search-switch">
             <i class="icon_search"></i>
         </div>
         <div class="header-configure-area">
             <a href="#" class="bk-btn">Booking Now</a>
         </div>
-         <nav class="mainmenu mobile-menu">
+        <nav class="mainmenu mobile-menu">
             <ul>
                 <li class="active"><a href="{% url 'home' %}">Home</a></li>
                 <li><a href="{% url 'rooms' %}">Rooms</a>
@@ -66,13 +64,14 @@
             <li><i class="fa fa-envelope"></i> info.colorlib@gmail.com</li>
         </ul>
     </div>
-    <header class="header-section header-normal">
+    <header class="header-section">
+        
         <div class="menu-item">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-2">
                         <div class="logo">
-                            <a href="{% url 'home' %}">
+                            <a href="/">
                                 <img src="{% static 'img/logo.png' %}" alt="">
                             </a>
                         </div>
@@ -102,102 +101,87 @@
             </div>
         </div>
     </header>
-    <!-- Breadcrumb Section Begin -->
-    <div class="breadcrumb-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="breadcrumb-text">
-                        <h2>Our Rooms</h2>
-                        <div class="bt-option">
-                            <a href="{% url 'home' %}">Home</a>
-                            <span>Rooms</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Breadcrumb Section End -->
-
-    <!-- Room Details Section Begin -->
-    <section class="room-details-section spad">
+    <section class="booking-section spad">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="room-details-item">
-                    <img src="{{ room.image.url }}" alt="{{ room.name }}">
-                    
-                    <div class="rd-text">
-                        <div class="rd-title">
-                            <h3>{{ room.name }}</h3> <div class="rd-price">
-                                <span>{{ room.price }}$</span>/Pernight
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <form method="get" class="filter-form bg-white p-4 shadow-sm" style="border-radius: 10px;">
+                    <div class="row">
+                        <div class="col-lg-4 mb-3">
+                            <label class="text-muted small fw-bold text-uppercase">Check In</label>
+                            <div class="position-relative">
+                                {{ filter.form.check_in }}
+                            </div>
+                        </div>
+                        <div class="col-lg-4 mb-3">
+                            <label class="text-muted small fw-bold text-uppercase">Check Out</label>
+                            <div class="position-relative">
+                                {{ filter.form.check_out }}
+                            </div>
+                        </div>
+                        <div class="col-lg-4 mb-3">
+                            <label class="text-muted small fw-bold text-uppercase">Guests (Capacity)</label>
+                            {{ filter.form.capacity }}
+                        </div>
+
+                        <div class="col-12"><hr class="my-4" style="opacity: 0.1;"></div>
+                            <div class="row align-items-end"> <div class="col-lg-4 mb-4">
+                                <label class="d-block text-muted small fw-bold text-uppercase mb-2">Category</label>
+                                <div class="custom-select-wrapper">
+                                    {{ filter.form.category }}
+                                </div>
                             </div>
                         </div>
                         
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td class="r-o">Size:</td>
-                                    <td>{{ room.size }} ft</td>
-                                </tr>
-                                <tr>
-                                    <td class="r-o">Capacity:</td>
-                                    <td>Max person {{ room.capacity }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="r-o">Category:</td>
-                                    <td>{{ room.category.name }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="col-lg-4 mb-4">
+                            <label class="d-block text-muted small fw-bold text-uppercase mb-2">Price Range (Min - Max)</label>
+                            <div class="d-flex gap-2">
+                                <div class="flex-fill">
+                                      {{ filter.form.price_min }}
+                                </div>
+                                <div class="flex-fill">
+                                    {{ filter.form.price_max }}
+                                </div>
+                            </div>
+                        </div>
                         
-                        <p class="f-para">
-                            {{ room.description }} </p>
+                        <div class="col-lg-4 mb-4">    
+                            <label class="d-block text-muted small fw-bold text-uppercase mb-2">Availability</label>
+                            <div class="custom-select-wrapper">
+                                {{ filter.form.is_available }}
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="col-lg-4">
-                <div class="booking-form">
-                         <h3>Booking Your Hotel</h3>
-                        <form action="{% url 'booking' %}" method="get">
-        
-                            <div class="check-date">
-                                <label for="date-in">Check In:</label>
-                                <input type="text" class="date-input" id="date-in" name="check_in" placeholder="Select Date">
-                                <i class="icon_calendar"></i>
+            </div>      
+
+                        <div class="col-12 mb-4">
+                            <label class="text-muted small fw-bold text-uppercase">Amenities</label>
+                            <div class="amenities-list bg-light p-3" style="max-height: 120px; overflow-y: auto; border-radius: 5px; border: 1px solid #eee;">
+                                <div class="row">
+                                    <div class="col-12 custom-checkboxes">
+                                        {{ filter.form.amenities }}
+                                    </div>
+                                </div>
                             </div>
-        
-                            <div class="check-date">
-                                <label for="date-out">Check Out:</label>
-                                <input type="text" class="date-input" id="date-out" name="check_out" placeholder="Select Date">
-                                <i class="icon_calendar"></i>
-                            </div>
-        
-                            <div class="select-option">
-                                <label for="guest">Guests:</label>
-                                <select id="guest" name="capacity" class="form-control">
-                                    <option value="1">1 Adult</option>
-                                    <option value="2" selected>2 Adults</option>
-                                    <option value="3">3 Adults</option>
-                                    <option value="4">4 Adults</option>
-                                </select>
-                            </div>
-        
-                            <button type="submit">Check Availability</button>
-                        </form>
+                        </div>
+
+                        <div class="col-lg-8 mx-auto text-center">
+                            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow-sm" style="background-color: #dfa974; border: none; letter-spacing: 1px;">
+                                UPDATE RESULTS
+                            </button>
+                            <a href="{% url 'booking' %}" class="btn btn-link w-100 text-decoration-none text-muted mt-2 small">Clear all filters</a>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
 </section>
-    <!-- Room Details Section End -->
 
-    <!-- Footer Section Begin -->
+
+
     <footer class="footer-section">
-        <div class="container">
             <div class="footer-text">
                 <div class="row">
                     <div class="col-lg-4">
@@ -239,30 +223,26 @@
                     </div>
                 </div>
             </div>
-        </div>
         <div class="copyright-option">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-7">
                         <ul>
-                            <li><a href="#">Contact</a></li>
+                            <li><a href="{% url 'contact' %}">Contact</a></li>
                             <li><a href="#">Terms of use</a></li>
                             <li><a href="#">Privacy</a></li>
                             <li><a href="#">Environmental Policy</a></li>
                         </ul>
                     </div>
                     <div class="col-lg-5">
-                        <div class="co-text"><p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                        <div class="co-text"><p>
   Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-  <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p></div>
+  </p></div>
                     </div>
                 </div>
             </div>
         </div>
     </footer>
-    <!-- Footer Section End -->
-
-    <!-- Search model Begin -->
     <div class="search-model">
         <div class="h-100 d-flex align-items-center justify-content-center">
             <div class="search-close-switch"><i class="icon_close"></i></div>
@@ -271,9 +251,6 @@
             </form>
         </div>
     </div>
-    <!-- Search model end -->
-
-    <!-- Js Plugins -->
     <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
@@ -284,4 +261,3 @@
     <script src="{% static 'js/main.js' %}"></script>
 </body>
 
-</html>

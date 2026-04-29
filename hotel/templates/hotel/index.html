@@ -49,7 +49,7 @@
                 <li class="active"><a href="{% url 'home' %}">Home</a></li>
                 <li><a href="{% url 'rooms' %}">Rooms</a>
                     <ul class="dropdown">
-                        <li><a href="{% url 'room_details' %}">Room Details</a></li>
+                        <li><a href="#">Room Details</a></li>
                         <li><a href="#">Deluxe Room</a></li>
                         <li><a href="#">Family Room</a></li>
                         <li><a href="#">Premium Room</a></li>
@@ -83,7 +83,7 @@
                                     <li class="active"><a href="{% url 'home' %}">Home</a></li>
                                     <li><a href="{% url 'rooms' %}">Rooms</a>
                                         <ul class="dropdown">
-                                            <li><a href="{% url 'room_details' %}">Room Details</a></li>
+                                            <li><a href="#">Room Details</a></li>
                                             <li><a href="#">Deluxe Room</a></li>
                                             <li><a href="#">Family Room</a></li>
                                             <li><a href="#">Premium Room</a></li>
@@ -114,32 +114,31 @@
                 </div>
                 <div class="col-xl-4 col-lg-5 offset-xl-2 offset-lg-1">
                     <div class="booking-form">
-                        <h3>Booking Your Hotel</h3>
-                        <form action="#">
+                         <h3>Booking Your Hotel</h3>
+                        <form action="{% url 'booking' %}" method="get">
+        
                             <div class="check-date">
                                 <label for="date-in">Check In:</label>
-                                <input type="text" class="date-input" id="date-in">
+                                <input type="text" class="date-input" id="date-in" name="check_in" placeholder="Select Date">
                                 <i class="icon_calendar"></i>
                             </div>
+        
                             <div class="check-date">
                                 <label for="date-out">Check Out:</label>
-                                <input type="text" class="date-input" id="date-out">
+                                <input type="text" class="date-input" id="date-out" name="check_out" placeholder="Select Date">
                                 <i class="icon_calendar"></i>
                             </div>
+        
                             <div class="select-option">
                                 <label for="guest">Guests:</label>
-                                <select id="guest">
-                                    <option value="">2 Adults</option>
-                                    <option value="">3 Adults</option>
+                                <select id="guest" name="capacity" class="form-control">
+                                    <option value="1">1 Adult</option>
+                                    <option value="2" selected>2 Adults</option>
+                                    <option value="3">3 Adults</option>
+                                    <option value="4">4 Adults</option>
                                 </select>
                             </div>
-                            <div class="select-option">
-                                <label for="room">Room:</label>
-                                <select id="room">
-                                    <option value="">1 Room</option>
-                                    <option value="">2 Room</option>
-                                </select>
-                            </div>
+        
                             <button type="submit">Check Availability</button>
                         </form>
                     </div>
