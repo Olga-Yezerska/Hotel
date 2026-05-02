@@ -1,6 +1,7 @@
 import django_filters
 from django import forms
-from .models import Room, Category, Amenity
+from .models import Room, Category, Amenity, Booking
+from datetime import datetime
 
 class RoomFilter(django_filters.FilterSet):
     price_min = django_filters.NumberFilter(
@@ -49,21 +50,21 @@ class RoomFilter(django_filters.FilterSet):
     )
 
     check_in = django_filters.DateFilter(
-        input_formats=['%d %B %Y'], # Формат для "29 April 2026"
+        method='filter_check_in',
+        input_formats=['%d %B, %Y', '%Y-%m-%d'],
         widget=forms.DateInput(attrs={
-            'class': 'date-input', 
+            'class': 'date-input',
             'placeholder': 'Check In',
-            'autocomplete': 'off'
-        })
+            'autocomplete': 'off'})
     )
     
     check_out = django_filters.DateFilter(
-        input_formats=['%d %B %Y'], # Формат для "29 April 2026"
+        method='filter_check_out',
+        input_formats=['%d %B, %Y'],
         widget=forms.DateInput(attrs={
-            'class': 'date-input', 
+            'class': 'date-input',
             'placeholder': 'Check Out',
-            'autocomplete': 'off'
-        })
+            'autocomplete': 'off'})
     )
 
     capacity = django_filters.NumberFilter(
@@ -74,6 +75,24 @@ class RoomFilter(django_filters.FilterSet):
             'placeholder': 'Guests'
         })
     )
+
+    def filter_check_in(self, queryset, name, value):
+        check_out_str = self.data.get('check_out')
+        if value and check_out_str:
+            try:
+                check_out = datetime.strptime(check_out_str, '%d %B, %Y').date()
+            except ValueError: 
+                return queryset
+            booked_rooms = Booking.objects.filter(
+                check_in__lt=check_out,
+                check_out__gt=value
+            ).values_list('room_id', flat=True)
+            return queryset.exclude(id__in=booked_rooms)
+        return queryset
+
+    def filter_check_out(self, queryset, name, value):
+        return queryset
+
     class Meta:
         model = Room
         fields = ['category', 'amenities', 'is_available']
