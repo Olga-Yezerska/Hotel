@@ -51,10 +51,10 @@
                 <li class="active"><a href="{% url 'home' %}">Home</a></li>
                 <li><a href="{% url 'rooms' %}">Rooms</a>
                     <ul class="dropdown">
-                        <li><a href="{% url 'room_details' %}">Room Details</a></li>
-                        <li><a href="#">Deluxe Room</a></li>
-                        <li><a href="#">Family Room</a></li>
-                        <li><a href="#">Premium Room</a></li>
+                        <li><a href="{% url 'rooms' %}">All Rooms</a></li>
+                        {% for cat in categories %}
+                        <li><a href="{% url 'rooms_by_category' cat.pk %}">{{ cat.name }}</a></li>
+                        {% endfor %}
                     </ul>
                 </li>
                 <li><a href="{% url 'contact' %}">Contact</a></li>
@@ -84,10 +84,10 @@
                                     <li class="active"><a href="{% url 'home' %}">Home</a></li>
                                     <li><a href="{% url 'rooms' %}">Rooms</a>
                                         <ul class="dropdown">
-                                            <li><a href="{% url 'room_details' %}">Room Details</a></li>
-                                            <li><a href="#">Deluxe Room</a></li>
-                                            <li><a href="#">Family Room</a></li>
-                                            <li><a href="#">Premium Room</a></li>
+                                            <li><a href="{% url 'rooms' %}">All Rooms</a></li>
+                                            {% for cat in categories %}
+                                            <li><a href="{% url 'rooms_by_category' cat.pk %}">{{ cat.name }}</a></li>
+                                            {% endfor %}
                                         </ul>
                                     </li>
                                     <li><a href="{% url 'contact' %}">Contact</a></li>
@@ -161,7 +161,7 @@
             <div class="col-lg-4">
                 <div class="booking-form">
                          <h3>Booking Your Hotel</h3>
-                        <form action="{% url 'booking' %}" method="get">
+                         <form action="" method="get">
         
                             <div class="check-date">
                                 <label for="date-in">Check In:</label>
@@ -186,6 +186,14 @@
                             </div>
         
                             <button type="submit">Check Availability</button>
+{% if is_free is True %}
+    <p style="color: green;">✓ Room is available!</p>
+    <a href="{% url 'create_booking' room.pk %}" class="primary-btn">
+        <button type="button">Book Now</button>
+    </a>
+{% elif is_free is False %}
+    <p style="color: red;">✗ Room is not available for these dates.</p>
+{% endif %}
                         </form>
                     </div>
                 </div>

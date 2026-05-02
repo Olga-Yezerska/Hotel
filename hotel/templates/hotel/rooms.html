@@ -51,10 +51,10 @@
                 <li class="active"><a href="{% url 'home' %}">Home</a></li>
                 <li><a href="{% url 'rooms' %}">Rooms</a>
                     <ul class="dropdown">
-                        <li><a href="#">Room Details</a></li>
-                        <li><a href="#">Deluxe Room</a></li>
-                        <li><a href="#">Family Room</a></li>
-                        <li><a href="#">Premium Room</a></li>
+                        <li><a href="{% url 'rooms' %}">All Rooms</a></li>
+                        {% for cat in categories %}
+                        <li><a href="{% url 'rooms_by_category' cat.pk %}">{{ cat.name }}</a></li>
+                        {% endfor %}
                     </ul>
                 </li>
                 <li><a href="{% url 'contact' %}">Contact</a></li>
@@ -87,10 +87,10 @@
                                     <li class="active"><a href="{% url 'home' %}">Home</a></li>
                                     <li><a href="{% url 'rooms' %}">Rooms</a>
                                         <ul class="dropdown">
-                                            <li><a href="#">Room Details</a></li>
-                                            <li><a href="#">Deluxe Room</a></li>
-                                            <li><a href="#">Family Room</a></li>
-                                            <li><a href="#">Premium Room</a></li>
+                                            <li><a href="{% url 'rooms' %}">All Rooms</a></li>
+                                            {% for cat in categories %}
+                                            <li><a href="{% url 'rooms_by_category' cat.pk %}">{{ cat.name }}</a></li>
+                                            {% endfor %}
                                         </ul>
                                     </li>
                                     <li><a href="{% url 'contact' %}">Contact</a></li>
@@ -128,7 +128,7 @@
     <section class="rooms-section spad">
         <div class="container">
             <div class="row">
-                {% for room in rooms %}
+                {% for room in filter.qs %}
                     <div class="col-lg-4 col-md-6">
                         <div class="room-item">
                             {% if room.image %}
