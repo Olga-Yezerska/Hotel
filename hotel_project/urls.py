@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from hotel import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,4 +27,6 @@ urlpatterns = [
     path('rooms/', views.rooms, name='rooms'),
     path('booking/', views.booking_view, name='booking'),
     path('rooms/<int:pk>/', views.room_details, name='room_details'),
-]
+    path('rooms/category/<int:category_id>/', views.rooms_by_category, name='rooms_by_category'),
+    path('rooms/<int:pk>/book/', views.create_booking, name='create_booking'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

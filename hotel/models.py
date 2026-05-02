@@ -37,3 +37,12 @@ class HotelInfo(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Booking(models.Model):
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='bookings')
+    check_in = models.DateField()
+    check_out = models.DateField()
+    guests = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"{self.room.name} | {self.check_in} - {self.check_out}"
