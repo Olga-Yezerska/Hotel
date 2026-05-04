@@ -138,10 +138,6 @@
                         <table>
                             <tbody>
                                 <tr>
-                                    <td class="r-o">Size:</td>
-                                    <td>{{ room.size }} ft</td>
-                                </tr>
-                                <tr>
                                     <td class="r-o">Capacity:</td>
                                     <td>Max person {{ room.capacity }}</td>
                                 </tr>
@@ -149,6 +145,14 @@
                                     <td class="r-o">Category:</td>
                                     <td>{{ room.category.name }}</td>
                                 </tr>
+                                 <tr>
+                                    <td class="r-o">Services:</td>
+                                    <td>
+                                        {% for amenity in room.amenities.all %}
+                                            {{ amenity.name }}{% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </td> 
+                                </tr>        
                             </tbody>
                         </table>
                         
