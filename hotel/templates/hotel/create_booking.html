@@ -140,6 +140,41 @@
                             </p>
                         </div>
                     </div>
+                        {% if messages %}
+                            <div class="messages-container" style="margin-top: 20px; margin-bottom: 30px;">
+                                {% for message in messages %}
+                                    <div class="booking-success-message" style="
+                                        padding: 30px; 
+                                        border: 2px solid #dfa974; 
+                                        background-color: #fdfaf7; 
+                                        border-radius: 8px; 
+                                        text-align: center;
+                                        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+                                    ">
+                                        <div style="font-size: 40px; color: #dfa974; margin-bottom: 15px;">
+                                            <i class="icon_check_alt2"></i>
+                                        </div>
+                                        <h4 style="color: #111; font-weight: 700; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">
+                                            Дякуємо, замовлення прийнято!
+                                        </h4>
+                                        <p style="color: #666; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+                                            {{ message }}
+                                        </p>
+                                        <a href="{% url 'home' %}" class="primary-btn" style="
+                                            display: inline-block; 
+                                            padding: 12px 30px; 
+                                            background: #dfa974; 
+                                            color: white; 
+                                            text-decoration: none; 
+                                            font-weight: 700;
+                                            border-radius: 2px;
+                                        ">
+                                            Повернутися на головну
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                         <!-- Форма бронювання -->
                         <form method="post" class="contact-form">
                             {% csrf_token %}
