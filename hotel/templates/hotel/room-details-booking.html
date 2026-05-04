@@ -159,13 +159,34 @@
                         <p class="f-para">
                             {{ room.description }} </p>
                     </div>
-                    <!-- Кнопка на сторінці деталей -->
-                    <div class="booking-button mt-4">
+           
+                    <div class="booking-button-wrapper mt-4 mb-5 text-center">
                         <a href="{% url 'create_booking' room.id %}?check_in={{ request.GET.check_in }}&check_out={{ request.GET.check_out }}" 
-                           class="btn primary-btn">
-                            Confirm & Book Now
+                            class="primary-btn" 
+                            style="display: inline-block; 
+                                background: #dfa974; /* Фірмовий золотистий колір - тепер постійний */
+                                color: #ffffff;      /* Білий текст */
+                                min-width: 300px; 
+                                padding: 18px 40px; 
+                                font-size: 18px; 
+                                font-weight: 700;
+                                letter-spacing: 2px; 
+                                text-transform: uppercase; 
+                                border-radius: 2px;
+                                box-shadow: 0 4px 15px rgba(223, 169, 116, 0.4); 
+                                text-decoration: none;
+                                transition: all 0.3s ease;">
+                                Confirm & Book Now 
                         </a>
                     </div>
+
+                    <style>
+                    .primary-btn:hover {
+                        background-color: #c89462; /* Трохи темніший відтінок при наведенні */
+                        transform: translateY(-2px); /* Ефект підняття */
+                        box-shadow: 0 6px 20px rgba(223, 169, 116, 0.4);
+                    }
+                    </style>
                 </div>
             </div>
         </div>

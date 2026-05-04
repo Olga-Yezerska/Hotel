@@ -1,8 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="zxx">
 
 <head>
     {% load static %}
+    
     <meta charset="UTF-8">
     <meta name="description" content="Sona Template">
     <meta name="keywords" content="Sona, unica, creative, html">
@@ -186,6 +188,15 @@
                                     Check Availability
                                 </button>
                             </div>
+                            {% if messages %}
+                                <div class="messages-container" style="margin-bottom: 20px;">
+                                    {% for message in messages %}
+                                        <div class="alert" style="color: white; background-color: #dc3545; padding: 10px; border-radius: 5px; text-align: center; font-weight: 600;">
+                                            <i class="icon_error-circle_alt"></i> {{ message }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
 
                             {% if is_free is True %}
                             <div class="availability-status success" style="text-align: center;">
@@ -303,6 +314,9 @@
     <script src="{% static 'js/jquery.slicknav.js' %}"></script>
     <script src="{% static 'js/owl.carousel.min.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
+    <!-- ... весь ваш код сторінки ... -->
+    <script src="{% static 'js/main.js' %}"></script>
 </body>
 
 </html>
+
