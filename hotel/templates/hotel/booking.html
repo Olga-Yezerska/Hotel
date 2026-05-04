@@ -206,8 +206,9 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <a href="{% url 'room_details' room.pk %}" class="primary-btn">More Details</a>
-                        <a href="{% url 'create_booking' room.pk %}" class="primary-btn">Book Now</a>
+                        <a href="{% url 'room_details_booking' room.id %}?check_in={{ request.GET.check_in }}&check_out={{ request.GET.check_out }}" 
+   class="primary-btn">More Details</a>
+                        <a href="{% url 'create_booking' room.pk %}?check_in={{ request.GET.check_in }}&check_out={{ request.GET.check_out }}" class="primary-btn">Book Now</a>
                     </div>
                 </div>
             </div>
@@ -298,5 +299,10 @@
     <script src="{% static 'js/jquery.slicknav.js' %}"></script>
     <script src="{% static 'js/owl.carousel.min.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
+    <!-- ... весь ваш код сторінки ... -->
+    <script src="{% static 'js/main.js' %}"></script>
+
 </body>
+
+</html>
 

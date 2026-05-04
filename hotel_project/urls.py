@@ -27,6 +27,7 @@ urlpatterns = [
     path('rooms/', views.rooms, name='rooms'),
     path('booking/', views.booking_view, name='booking'),
     path('rooms/<int:pk>/', views.room_details, name='room_details'),
+    path('roomsbooking/<int:pk>/', views.room_details_booking, name='room_details_booking'),
     path('rooms/category/<int:category_id>/', views.rooms_by_category, name='rooms_by_category'),
     path('rooms/<int:pk>/book/', views.create_booking, name='create_booking'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

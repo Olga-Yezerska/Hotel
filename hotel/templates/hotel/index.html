@@ -26,6 +26,7 @@
 </head>
 
 <body>
+    {% block content %}
     <div id="preloder">
         <div class="loader"></div>
     </div>
@@ -114,21 +115,22 @@
                 </div>
                 <div class="col-xl-4 col-lg-5 offset-xl-2 offset-lg-1">
                     <div class="booking-form">
-                         <h3>Booking Your Hotel</h3>
-                        <form action="{% url 'booking' %}" method="get">
-        
+                        <h3>Booking Your Hotel</h3>
+                            <!-- Змінюємо action на порожній або на головну сторінку -->
+                        <form action="." method="get"> 
+
                             <div class="check-date">
                                 <label for="date-in">Check In:</label>
                                 <input type="text" class="date-input" id="date-in" name="check_in" placeholder="Select Date">
                                 <i class="icon_calendar"></i>
                             </div>
-        
+
                             <div class="check-date">
                                 <label for="date-out">Check Out:</label>
                                 <input type="text" class="date-input" id="date-out" name="check_out" placeholder="Select Date">
                                 <i class="icon_calendar"></i>
                             </div>
-        
+
                             <div class="select-option">
                                 <label for="guest">Guests:</label>
                                 <select id="guest" name="capacity" class="form-control">
@@ -138,9 +140,19 @@
                                     <option value="4">4 Adults</option>
                                 </select>
                             </div>
-        
+
                             <button type="submit">Check Availability</button>
-                        </form>
+
+                            {% if messages %}
+                            <div class="container mt-3">
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" style="color: white; background-color: #f44336; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+                                    <strong>Помилка:</strong> {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    </form>
                     </div>
                 </div>
             </div>
@@ -418,6 +430,11 @@
     <script src="{% static 'js/jquery.slicknav.js' %}"></script>
     <script src="{% static 'js/owl.carousel.min.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
+    <!-- ... весь ваш код сторінки ... -->
+    <script src="{% static 'js/main.js' %}"></script>
+    
+{% endblock %} 
 </body>
 
 </html>
+

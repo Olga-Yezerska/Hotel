@@ -44,5 +44,9 @@ class Booking(models.Model):
     check_out = models.DateField()
     guests = models.PositiveIntegerField()
 
+    customer_name = models.CharField(max_length=100)
+    customer_email = models.EmailField()
+    customer_phone = models.CharField(max_length=20)
+
     def __str__(self):
         return f"{self.room.name} | {self.check_in} - {self.check_out}"

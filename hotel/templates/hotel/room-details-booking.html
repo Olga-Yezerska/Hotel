@@ -1,10 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="zxx">
 
 <head>
     {% load static %}
-    
     <meta charset="UTF-8">
     <meta name="description" content="Sona Template">
     <meta name="keywords" content="Sona, unica, creative, html">
@@ -126,7 +124,7 @@
     <section class="room-details-section spad">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8">
+            <div class="col-lg-12">
                 <div class="room-details-item">
                     <img src="{{ room.image.url }}" alt="{{ room.name }}">
                     
@@ -161,65 +159,34 @@
                         <p class="f-para">
                             {{ room.description }} </p>
                     </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4">
-                <div class="booking-form">
-                         <h3>Booking Your Hotel</h3>
-                         <form action="" method="get">
-        
-                            <div class="check-date">
-                                <label for="date-in">Check In:</label>
-                                <input type="text" class="date-input" id="date-in" name="check_in" placeholder="Select Date">
-                                <i class="icon_calendar"></i>
-                            </div>
-        
-                            <div class="check-date">
-                                <label for="date-out">Check Out:</label>
-                                <input type="text" class="date-input" id="date-out" name="check_out" placeholder="Select Date">
-                                <i class="icon_calendar"></i>
-                            </div>
-        
-                            <div class="check-availability-block" style="margin-top: 30px; padding: 20px; border: 1px solid #ebebeb; border-radius: 8px;">
-    
-                              <!-- Кнопка перевірки -->
-                                <button type="submit" class="primary-btn" style="border: none; width: 100%; margin-bottom: 20px;">
-                                    Check Availability
-                                </button>
-                            </div>
-                            {% if messages %}
-                                <div class="messages-container" style="margin-bottom: 20px;">
-                                    {% for message in messages %}
-                                        <div class="alert" style="color: white; background-color: #dc3545; padding: 10px; border-radius: 5px; text-align: center; font-weight: 600;">
-                                            <i class="icon_error-circle_alt"></i> {{ message }}
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-
-                            {% if is_free is True %}
-                            <div class="availability-status success" style="text-align: center;">
-                                <p style="color: #28a745; font-weight: 700; font-size: 18px; margin-bottom: 15px;">
-                                    <i class="icon_check_alt2"></i> Room is available!
-                                </p>                             
-                                <a href="{% url 'create_booking' room.pk %}?check_in={{ request.GET.check_in }}&check_out={{ request.GET.check_out }}" 
-                                    class="primary-btn" 
-                                    style="display: block; background: #dfa974;">
-                                    Book Now
-                                </a>
-                            </div>
-
-                        {% elif is_free is False %}
-                            <div class="availability-status danger" style="text-align: center;">
-                                <p style="color: #dc3545; font-weight: 700; font-size: 18px;">
-                                    <i class="icon_close_alt2"></i> Room is not available for these dates.
-                                </p>
-                            </div>
-                        {% endif %}
+           
+                    <div class="booking-button-wrapper mt-4 mb-5 text-center">
+                        <a href="{% url 'create_booking' room.id %}?check_in={{ request.GET.check_in }}&check_out={{ request.GET.check_out }}" 
+                            class="primary-btn" 
+                            style="display: inline-block; 
+                                background: #dfa974; /* Фірмовий золотистий колір - тепер постійний */
+                                color: #ffffff;      /* Білий текст */
+                                min-width: 300px; 
+                                padding: 18px 40px; 
+                                font-size: 18px; 
+                                font-weight: 700;
+                                letter-spacing: 2px; 
+                                text-transform: uppercase; 
+                                border-radius: 2px;
+                                box-shadow: 0 4px 15px rgba(223, 169, 116, 0.4); 
+                                text-decoration: none;
+                                transition: all 0.3s ease;">
+                                Confirm & Book Now 
+                        </a>
                     </div>
-           </form>
-                    </div>
+
+                    <style>
+                    .primary-btn:hover {
+                        background-color: #c89462; /* Трохи темніший відтінок при наведенні */
+                        transform: translateY(-2px); /* Ефект підняття */
+                        box-shadow: 0 6px 20px rgba(223, 169, 116, 0.4);
+                    }
+                    </style>
                 </div>
             </div>
         </div>
@@ -314,9 +281,6 @@
     <script src="{% static 'js/jquery.slicknav.js' %}"></script>
     <script src="{% static 'js/owl.carousel.min.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
-    <!-- ... весь ваш код сторінки ... -->
-    <script src="{% static 'js/main.js' %}"></script>
 </body>
 
 </html>
-
