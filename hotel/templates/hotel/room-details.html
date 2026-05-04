@@ -179,26 +179,35 @@
                                 <i class="icon_calendar"></i>
                             </div>
         
-                            <div class="select-option">
-                                <label for="guest">Guests:</label>
-                                <select id="guest" name="capacity" class="form-control">
-                                    <option value="1">1 Adult</option>
-                                    <option value="2" selected>2 Adults</option>
-                                    <option value="3">3 Adults</option>
-                                    <option value="4">4 Adults</option>
-                                </select>
+                            <div class="check-availability-block" style="margin-top: 30px; padding: 20px; border: 1px solid #ebebeb; border-radius: 8px;">
+    
+                              <!-- Кнопка перевірки -->
+                                <button type="submit" class="primary-btn" style="border: none; width: 100%; margin-bottom: 20px;">
+                                    Check Availability
+                                </button>
                             </div>
-        
-                            <button type="submit">Check Availability</button>
-{% if is_free is True %}
-    <p style="color: green;">✓ Room is available!</p>
-    <a href="{% url 'create_booking' room.pk %}" class="primary-btn">
-        <button type="button">Book Now</button>
-    </a>
-{% elif is_free is False %}
-    <p style="color: red;">✗ Room is not available for these dates.</p>
-{% endif %}
-                        </form>
+
+                            {% if is_free is True %}
+                            <div class="availability-status success" style="text-align: center;">
+                                <p style="color: #28a745; font-weight: 700; font-size: 18px; margin-bottom: 15px;">
+                                    <i class="icon_check_alt2"></i> Room is available!
+                                </p>                             
+                                <a href="{% url 'create_booking' room.pk %}?check_in={{ request.GET.check_in }}&check_out={{ request.GET.check_out }}" 
+                                    class="primary-btn" 
+                                    style="display: block; background: #dfa974;">
+                                    Book Now
+                                </a>
+                            </div>
+
+                        {% elif is_free is False %}
+                            <div class="availability-status danger" style="text-align: center;">
+                                <p style="color: #dc3545; font-weight: 700; font-size: 18px;">
+                                    <i class="icon_close_alt2"></i> Room is not available for these dates.
+                                </p>
+                            </div>
+                        {% endif %}
+                    </div>
+           </form>
                     </div>
                 </div>
             </div>
