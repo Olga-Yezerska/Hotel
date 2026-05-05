@@ -158,3 +158,45 @@ class TestBookingModel:
         assert existing_booking in room.bookings.all()
 
 
+# =============================================================================
+# 2. VIEW TESTS — доступність сторінок
+# =============================================================================
+
+@pytest.mark.django_db
+class TestPageAvailability:
+    """Перевіряємо, що основні URL повертають очікуваний HTTP-статус."""
+
+    @pytest.mark.parametrize("url_name", ["home", "rooms", "contact", "booking"])
+    def test_static_pages_return_200(self, client, url_name):
+        """Статичні сторінки без параметрів повертають HTTP 200."""
+        response = client.get(reverse(url_name))
+        assert response.status_code == 200
+
+    def test_room_details_returns_200(self, client, room):
+        """Сторінка деталей конкретної кімнати повертає 200."""
+        response = client.get(reverse("room_details", kwargs={"pk": room.pk}))
+        assert response.status_code == 200
+
+    def test_room_details_returns_404_for_unknown_pk(self, client):
+        """Запит із неіснуючим pk повертає 404."""
+        response = client.get(reverse("room_details", kwargs={"pk": 99999}))
+        assert response.status_code == 404
+
+    def test_rooms_by_category_returns_200(self, client, category):
+        """Фільтрована сторінка кімнат за категорією повертає 200."""
+        response = client.get(
+            reverse("rooms_by_category", kwargs={"category_id": category.pk})
+        )
+        assert response.status_code == 200
+
+    def test_create_booking_page_returns_200_with_valid_dates(self, client, room, today):
+        """Сторінка бронювання повертає 200, якщо передані коректні дати."""
+        check_in = (today + timedelta(days=5)).strftime("%d %B, %Y")
+        check_out = (today + timedelta(days=8)).strftime("%d %B, %Y")
+        response = client.get(
+            reverse("create_booking", kwargs={"pk": room.pk}),
+            {"check_in": check_in, "check_out": check_out},
+        )
+        assert response.status_code == 200
+
+
