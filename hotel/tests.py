@@ -67,3 +67,94 @@ def booking_url(room, today):
     return f"{base}?check_in={check_in}&check_out={check_out}"
 
 
+# =============================================================================
+# 1. MODEL TESTS
+# =============================================================================
+
+@pytest.mark.django_db
+class TestAmenityModel:
+    """Тести для моделі Amenity."""
+
+    def test_str_returns_name(self):
+        """__str__ повертає назву зручності."""
+        amenity = Amenity.objects.create(name="Wi-Fi")
+        assert str(amenity) == "Wi-Fi"
+
+    def test_creation_saves_to_db(self):
+        """Зручність успішно зберігається у БД і отримує первинний ключ."""
+        amenity = Amenity.objects.create(name="Pool")
+        assert amenity.pk is not None
+        assert amenity.name == "Pool"
+
+
+@pytest.mark.django_db
+class TestCategoryModel:
+    """Тести для моделі Category."""
+
+    def test_str_returns_name(self):
+        """__str__ повертає назву категорії."""
+        cat = Category.objects.create(name="Deluxe")
+        assert str(cat) == "Deluxe"
+
+    def test_creation_with_description(self):
+        """Категорія зберігає опис без змін."""
+        cat = Category.objects.create(name="Suite", description="Luxury suite rooms")
+        assert cat.description == "Luxury suite rooms"
+
+    def test_description_defaults_to_blank(self):
+        """Якщо опис не переданий, він дорівнює порожньому рядку."""
+        cat = Category.objects.create(name="Budget")
+        assert cat.description == ""
+
+
+@pytest.mark.django_db
+class TestRoomModel:
+    """Тести для моделі Room."""
+
+    def test_str_returns_name(self, room):
+        """__str__ повертає назву кімнати."""
+        assert str(room) == "Room 101"
+
+    def test_fields_saved_correctly(self, room):
+        """Поля price, capacity та is_available зберігаються коректно."""
+        assert room.price == Decimal("150.00")
+        assert room.capacity == 2
+        assert room.is_available is True
+
+    def test_is_available_defaults_to_true(self, category):
+        """is_available = True за замовчуванням при створенні нової кімнати."""
+        room = Room.objects.create(
+            name="Room 202", category=category, price=Decimal("200.00"), capacity=3
+        )
+        assert room.is_available is True
+
+    def test_many_to_many_amenities(self, room):
+        """До кімнати можна додати кілька зручностей через M2M."""
+        wifi = Amenity.objects.create(name="Wi-Fi")
+        tv = Amenity.objects.create(name="TV")
+        room.amenities.add(wifi, tv)
+        assert room.amenities.count() == 2
+        assert wifi in room.amenities.all()
+
+
+@pytest.mark.django_db
+class TestBookingModel:
+    """Тести для моделі Booking."""
+
+    def test_str_format(self, existing_booking, room, today):
+        """__str__ повертає '<назва кімнати> | <check_in> - <check_out>'."""
+        check_in = today + timedelta(days=5)
+        check_out = today + timedelta(days=10)
+        expected = f"{room.name} | {check_in} - {check_out}"
+        assert str(existing_booking) == expected
+
+    def test_fields_saved_correctly(self, existing_booking):
+        """Поля customer_name, customer_email та room зберігаються коректно."""
+        assert existing_booking.customer_name == "Existing Guest"
+        assert existing_booking.customer_email == "exist@example.com"
+
+    def test_related_name_from_room(self, existing_booking, room):
+        """Бронювання доступне через related_name 'bookings' з об'єкта кімнати."""
+        assert existing_booking in room.bookings.all()
+
+
