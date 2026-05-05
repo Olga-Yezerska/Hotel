@@ -200,3 +200,136 @@ class TestPageAvailability:
         assert response.status_code == 200
 
 
+# =============================================================================
+# 3. LOGIC & VALIDATION TESTS
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 3a. validate_dates 
+# -----------------------------------------------------------------------------
+
+_DATE_FMT = "%Y-%m-%d"
+
+
+@pytest.mark.parametrize("ci_delta,co_delta,expected_valid,err_keyword", [
+    # Коректні майбутні дати
+    (3,    6,    True,  None),
+    #  Заїзд у минулому
+    (-1,   3,    False, "минулому"),
+    #  Виїзд раніше заїзду
+    (5,    2,    False, "пізніше"),
+    #  Виїзд = заїзд (0 ночей)
+    (3,    3,    False, None),
+    #  Обидва параметри — None
+    (None, None, False, None),
+    #  Відсутній check_in
+    (None, 3,    False, None),
+    #  Відсутній check_out
+    (3,    None, False, None),
+], ids=[
+    "valid_future_dates",
+    "check_in_in_past",
+    "check_out_before_check_in",
+    "check_out_equals_check_in",
+    "both_none",
+    "missing_check_in",
+    "missing_check_out",
+])
+def test_validate_dates(today, ci_delta, co_delta, expected_valid, err_keyword):
+    """
+    Параметризована перевірка validate_dates для різних комбінацій дат.
+    Не потребує БД — перевіряємо лише бізнес-логіку функції.
+    """
+    check_in = (
+        (today + timedelta(days=ci_delta)).strftime(_DATE_FMT)
+        if ci_delta is not None else None
+    )
+    check_out = (
+        (today + timedelta(days=co_delta)).strftime(_DATE_FMT)
+        if co_delta is not None else None
+    )
+
+    is_valid, error = validate_dates(check_in, check_out)
+
+    assert is_valid is expected_valid
+    if err_keyword:
+        assert err_keyword in error
+    if expected_valid:
+        assert error is None
+
+
+def test_validate_dates_invalid_string_format(today):
+    """Некоректний рядок формату дати → is_valid=False."""
+    is_valid, _ = validate_dates("not-a-date", "also-not-a-date")
+    assert is_valid is False
+
+
+# -----------------------------------------------------------------------------
+# 3b. Розрахунок ціни та ночей у create_booking
+# -----------------------------------------------------------------------------
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("nights", [1, 3, 7, 14], ids=["1_night", "3_nights", "7_nights", "14_nights"])
+def test_price_calculation_for_different_nights(client, room, today, nights):
+    """
+    num_nights та total_price у контексті відповідають заданій кількості ночей.
+    Тестуємо 1, 3, 7 та 14 ночей.
+    """
+    check_in = (today + timedelta(days=5)).strftime("%d %B, %Y")
+    check_out = (today + timedelta(days=5 + nights)).strftime("%d %B, %Y")
+    response = client.get(
+        reverse("create_booking", kwargs={"pk": room.pk}),
+        {"check_in": check_in, "check_out": check_out},
+    )
+    assert response.context["num_nights"] == nights
+    assert response.context["total_price"] == room.price * nights
+
+
+@pytest.mark.django_db
+def test_create_booking_redirects_to_rooms_on_bad_dates(client, room):
+    """При некоректному форматі дат — редирект 302 на сторінку rooms."""
+    response = client.get(
+        reverse("create_booking", kwargs={"pk": room.pk}),
+        {"check_in": "garbage", "check_out": "garbage"},
+    )
+    assert response.status_code == 302
+    assert response["Location"].endswith(reverse("rooms"))
+
+
+# -----------------------------------------------------------------------------
+# 3c. Конфлікти бронювань 
+# -----------------------------------------------------------------------------
+
+# existing_booking займає дні: check_in=today+5, check_out=today+10
+@pytest.mark.django_db
+@pytest.mark.parametrize("new_ci,new_co,expect_conflict", [
+    #  Вільно — нові дати не перетинаються
+    (11, 15, False),  # повністю після
+    (1,  4,  False),  # повністю до
+    #  Конфлікт — різні типи перекриття
+    (3,  7,  True),   # перекриття початку (+3…+7 перекриває +5)
+    (6,  9,  True),   # нові дати всередині існуючого
+    (8,  12, True),   # перекриття кінця (+8…+12 перекриває +10)
+    (3,  13, True),   # нові дати огортають існуюче
+], ids=[
+    "free_after_existing",
+    "free_before_existing",
+    "conflict_overlap_start",
+    "conflict_fully_inside",
+    "conflict_overlap_end",
+    "conflict_wraps_existing",
+])
+def test_booking_conflict_scenarios(
+    existing_booking, room, today, new_ci, new_co, expect_conflict
+):
+    """
+    Параметризована перевірка алгоритму виявлення конфліктів (overlap).
+    Алгоритм: нові дати конфліктують, якщо new_ci < exist_co AND new_co > exist_ci.
+    """
+    conflict = Booking.objects.filter(
+        room=room,
+        check_in__lt=today + timedelta(days=new_co),
+        check_out__gt=today + timedelta(days=new_ci),
+    ).exists()
+    assert conflict is expect_conflict
+
