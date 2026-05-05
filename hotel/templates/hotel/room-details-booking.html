@@ -126,7 +126,11 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="room-details-item">
-                    <img src="{{ room.image.url }}" alt="{{ room.name }}">
+                    {% if room.image %}
+                        <img src="{{ room.image.url }}" alt="{{ room.name }}">
+                    {% else %}
+                        <img src="{% static 'img/room/room-1.jpg' %}" alt="{{ room.name }}">
+                    {% endif %}
                     
                     <div class="rd-text">
                         <div class="rd-title">
