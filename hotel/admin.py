@@ -7,5 +7,4 @@ from .models import Amenity, Category, Room, HotelInfo, Booking
 admin.site.register(Amenity)
 admin.site.register(Category)
 admin.site.register(Room)
-admin.site.register(HotelInfo)
 admin.site.register(Booking)

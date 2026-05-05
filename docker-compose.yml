@@ -1,17 +1,19 @@
 version: '3.9'
 
 services:
+  #База даних
   db:
-    image: postgres:15
+    image: postgres:15 #готовий офіційний образ
     environment:
-      POSTGRES_DB: hotel_db
-      POSTGRES_USER: hotel_user
-      POSTGRES_PASSWORD: hotel_pass
+      POSTGRES_DB: hotel_db #ім'я бази
+      POSTGRES_USER: hotel_user #користувач БД
+      POSTGRES_PASSWORD: hotel_pass  #пароль
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   web:
-    build: .
+  #Веб частина застосунку
+    build: . #збирає образ з Dockerfile у поточній директорії
     command: >
       sh -c "python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"

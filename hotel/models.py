@@ -3,12 +3,18 @@ from django.db import models
 # Create your models here.
 
 class Amenity(models.Model):
+    """
+    Таблиця зручностей
+    """
     name = models.CharField(max_length = 100)
 
     def __str__(self):
         return self.name
 
 class Category(models.Model):
+    """
+    Таблиця категорії кімнат (Стандарт, Люкс і тд)
+    """
     name = models.CharField(max_length = 100)
     description = models.TextField(blank = True)
 
@@ -16,6 +22,12 @@ class Category(models.Model):
         return self.name
     
 class Room(models.Model):
+    """
+    Таблиця кімнат
+
+    category: ForeignKey — багато кімнат до однієї категорії
+    amenities: ManyToManyField — кімната може мати кілька зручностей, і одна зручність може бути у кількох кімнатах.
+    """
     name = models.CharField(max_length = 50)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='rooms')
     amenities = models.ManyToManyField(Amenity, blank=True)
@@ -29,6 +41,9 @@ class Room(models.Model):
         return self.name
 
 class HotelInfo(models.Model):
+    """
+    Загальна інформація про готель
+    """
     name = models.CharField(max_length=50)
     description = models.TextField()
     address = models.TextField()
@@ -39,6 +54,11 @@ class HotelInfo(models.Model):
         return self.name
     
 class Booking(models.Model):
+    """
+    Таблиця інформації про бронювання кімнати
+ 
+    room: ForeignKey — бронювання прив'язане до конкретної кімнати
+    """
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='bookings')
     check_in = models.DateField()
     check_out = models.DateField()

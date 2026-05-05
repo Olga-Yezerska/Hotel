@@ -23,7 +23,7 @@ def index(request):
         is_valid, error_message = validate_dates(check_in, check_out)
         
         if not is_valid:
-            # Якщо помилка — створюємо повідомлення
+            #помилка — створюємо повідомлення
             messages.error(request, error_message)
             # Повертаємо ту саму сторінку index.html з повідомленням
             return render(request, 'hotel/index.html', {
@@ -31,7 +31,7 @@ def index(request):
                 'rooms': rooms
             })
         else:
-            # Якщо ВСЕ ДОБРЕ — перекидаємо на сторінку бронювання з даними
+            #якщо все добре — перекидаємо на сторінку бронювання з даними
             url = f"/booking/?check_in={check_in}&check_out={check_out}&capacity={capacity}"
             return redirect(url)
 

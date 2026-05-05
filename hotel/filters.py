@@ -34,8 +34,6 @@ class RoomFilter(django_filters.FilterSet):
 
     amenities = django_filters.ModelMultipleChoiceFilter(
         queryset=Amenity.objects.all(),
-        # Використовуємо CheckboxSelectMultiple, якщо хочете галочки, 
-        # або SelectMultiple з класом для списку
         widget=forms.CheckboxSelectMultiple(attrs={
             'class': 'amenity-checkbox'
         })
