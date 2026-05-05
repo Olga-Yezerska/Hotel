@@ -333,3 +333,147 @@ def test_booking_conflict_scenarios(
     ).exists()
     assert conflict is expect_conflict
 
+
+# =============================================================================
+# 4. INTEGRATION / FORM TESTS
+# =============================================================================
+
+@pytest.mark.django_db
+class TestCreateBookingView:
+    """Інтеграційні тести для view create_booking (POST/GET)."""
+
+    def test_post_creates_booking_record(self, client, booking_url):
+        """POST зберігає новий запис Booking у БД."""
+        client.post(booking_url, {
+            "customer_name": "John Smith",
+            "customer_email": "john@example.com",
+            "customer_phone": "+380671234567",
+        })
+        assert Booking.objects.count() == 1
+        assert Booking.objects.first().customer_name == "John Smith"
+
+    def test_post_booking_linked_to_correct_room(self, client, room, booking_url):
+        """Створене бронювання прив'язане до правильної кімнати."""
+        client.post(booking_url, {
+            "customer_name": "Room Checker",
+            "customer_email": "room@example.com",
+            "customer_phone": "+380000000003",
+        })
+        assert Booking.objects.first().room == room
+
+    def test_post_success_message_contains_customer_name(self, client, booking_url):
+        """Після POST повідомлення про успіх містить ім'я клієнта."""
+        response = client.post(booking_url, {
+            "customer_name": "Anna Kovalenko",
+            "customer_email": "anna@example.com",
+            "customer_phone": "+380501234567",
+        })
+        messages = list(get_messages(response.wsgi_request))
+        assert len(messages) > 0
+        assert "Anna Kovalenko" in str(messages[0])
+
+    def test_post_success_message_contains_room_name(self, client, room, booking_url):
+        """Після POST повідомлення містить назву заброньованої кімнати."""
+        response = client.post(booking_url, {
+            "customer_name": "Test User",
+            "customer_email": "test@example.com",
+            "customer_phone": "+380000000001",
+        })
+        messages = list(get_messages(response.wsgi_request))
+        assert room.name in str(messages[0])
+
+    def test_post_success_message_contains_thank_you(self, client, booking_url):
+        """Повідомлення після бронювання містить 'Дякуємо'."""
+        response = client.post(booking_url, {
+            "customer_name": "Thank You Tester",
+            "customer_email": "ty@example.com",
+            "customer_phone": "+380000000009",
+        })
+        messages = list(get_messages(response.wsgi_request))
+        assert "Дякуємо" in str(messages[0])
+
+    def test_get_does_not_create_booking(self, client, booking_url):
+        """GET-запит на сторінку не створює запис у БД."""
+        client.get(booking_url)
+        assert Booking.objects.count() == 0
+
+    def test_booking_stores_correct_dates(self, client, booking_url, today):
+        """Дати у створеному бронюванні відповідають датам із URL (+10 та +13)."""
+        client.post(booking_url, {
+            "customer_name": "Date Checker",
+            "customer_email": "date@example.com",
+            "customer_phone": "+380000000002",
+        })
+        booking = Booking.objects.first()
+        assert booking.check_in == today + timedelta(days=10)
+        assert booking.check_out == today + timedelta(days=13)
+
+
+@pytest.mark.django_db
+class TestHomePageRedirects:
+    """Тести редиректів та повідомлень про помилки на головній сторінці."""
+
+    @pytest.mark.parametrize("ci_delta,co_delta", [
+        (2, 5),
+        (1, 10),
+    ], ids=["short_stay", "long_stay"])
+    def test_valid_dates_redirect_to_booking(self, client, today, ci_delta, co_delta):
+        """Коректні дати → редирект 302 на /booking/."""
+        check_in = (today + timedelta(days=ci_delta)).strftime("%Y-%m-%d")
+        check_out = (today + timedelta(days=co_delta)).strftime("%Y-%m-%d")
+        response = client.get(
+            reverse("home"),
+            {"check_in": check_in, "check_out": check_out, "capacity": 2},
+        )
+        assert response.status_code == 302
+        assert "/booking/" in response["Location"]
+
+    @pytest.mark.parametrize("ci_delta,co_delta", [
+        (-1, 3),  # заїзд у минулому
+        (5,  2),  # виїзд до заїзду
+        (3,  3),  # виїзд = заїзд
+    ], ids=["past_check_in", "checkout_before_checkin", "checkout_equals_checkin"])
+    def test_invalid_dates_stay_on_home_with_error(self, client, today, ci_delta, co_delta):
+        """Невалідні дати → статус 200 на home та непорожнє повідомлення помилки."""
+        check_in = (today + timedelta(days=ci_delta)).strftime("%Y-%m-%d")
+        check_out = (today + timedelta(days=co_delta)).strftime("%Y-%m-%d")
+        response = client.get(
+            reverse("home"),
+            {"check_in": check_in, "check_out": check_out},
+        )
+        assert response.status_code == 200
+        assert len(list(get_messages(response.wsgi_request))) > 0
+
+
+@pytest.mark.django_db
+class TestRoomDetailsAvailability:
+    """Тести поля is_free у контексті сторінки room_details."""
+
+    @pytest.mark.parametrize("ci_delta,co_delta,expected_free", [
+        # Вільно — не перекривається з existing_booking (+5…+10)
+        (11, 14, True),
+        (1,  4,  True),
+        # Зайнято — різні типи перекриття
+        (6,  9,  False),
+        (3,  7,  False),
+        (8,  12, False),
+    ], ids=["free_after", "free_before", "overlap_inside", "overlap_start", "overlap_end"])
+    def test_is_free_with_dates(
+        self, client, room, today, existing_booking, ci_delta, co_delta, expected_free
+    ):
+        """
+        is_free у контексті room_details коректно відображає доступність.
+        Формат дат для цього view: '%d %b, %Y' (наприклад '12 May, 2026').
+        """
+        check_in = (today + timedelta(days=ci_delta)).strftime("%d %b, %Y")
+        check_out = (today + timedelta(days=co_delta)).strftime("%d %b, %Y")
+        response = client.get(
+            reverse("room_details", kwargs={"pk": room.pk}),
+            {"check_in": check_in, "check_out": check_out},
+        )
+        assert response.context["is_free"] is expected_free
+
+    def test_is_free_is_none_without_dates(self, client, room):
+        """is_free = None, якщо дати не передані у запиті."""
+        response = client.get(reverse("room_details", kwargs={"pk": room.pk}))
+        assert response.context["is_free"] is None
