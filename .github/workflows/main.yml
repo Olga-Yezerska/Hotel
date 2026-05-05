@@ -42,5 +42,10 @@ jobs:
           DATABASE_URL: postgres://hotel_user:hotel_pass@localhost:5432/hotel_db
         run: python manage.py migrate
 
+      - name: Run tests       
+        env:
+          DATABASE_URL: postgres://hotel_user:hotel_pass@localhost:5432/hotel_db
+        run: python manage.py test
+
       - name: Build Docker image
         run: docker build -t hotel-app .
