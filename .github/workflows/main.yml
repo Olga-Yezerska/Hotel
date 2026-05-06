@@ -32,7 +32,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'   # ⚠️ краще ніж 3.13 для Heroku
+          python-version: '3.13'  
 
       - name: Install dependencies
         run: |
