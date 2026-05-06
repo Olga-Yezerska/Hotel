@@ -51,17 +51,12 @@ jobs:
         run: pytest --ds=hotel_project.settings -v
 
   deploy:
-    name: Deploy to Heroku
     runs-on: ubuntu-latest
-    needs: build  # Запускається тільки після успішного білду
-    if: github.event_name == 'push' # Розгортаємо тільки при пуші в main
-
+    needs: build
+    if: github.event_name == 'push'
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Deploy to Heroku
-        uses: akhileshns/heroku-deploy@v3.13.15 
+      - uses: actions/checkout@v4
+      - uses: akhileshns/heroku-deploy@v3.13.15 # Це спеціальний інструмент
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
