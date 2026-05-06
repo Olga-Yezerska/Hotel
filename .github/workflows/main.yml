@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     services:
       postgres:
         image: postgres:15
@@ -31,7 +32,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.11'   # ⚠️ краще ніж 3.13 для Heroku
 
       - name: Install dependencies
         run: |
@@ -52,10 +53,18 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     if: github.event_name == 'push'
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: akhileshns/heroku-deploy@v3.13.15
-        with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: "hotel-system"
-          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 🔧 ФІКС ТВОЄЇ ПОМИЛКИ
+      - name: Install Heroku CLI
+        run: curl https://cli-assets.heroku.com/install.sh | sh
+
+      - name: Deploy to Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          heroku git:remote -a hotel-system
+          git push https://heroku:$HEROKU_API_KEY@git.heroku.com/hotel-system.git HEAD:main
