@@ -1,4 +1,4 @@
-name: Django CI
+name: Django CI/CD
 
 on:
   push:
@@ -35,7 +35,9 @@ jobs:
           python-version: '3.13'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
+          pip install pytest pytest-django gunicorn  # Додаємо необхідні пакети
 
       - name: Run migrations
         env:
@@ -45,7 +47,22 @@ jobs:
       - name: Run tests       
         env:
           DATABASE_URL: postgres://hotel_user:hotel_pass@localhost:5432/hotel_db
-        run: python manage.py test
+        # Використовуємо pytest, як вказано в твоєму файлі тестів
+        run: pytest --ds=hotel_project.settings -v
 
-      - name: Build Docker image
-        run: docker build -t hotel-app .
+  deploy:
+    name: Deploy to Heroku
+    runs-on: ubuntu-latest
+    needs: build  # Запускається тільки після успішного білду
+    if: github.event_name == 'push' # Розгортаємо тільки при пуші в main
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.13.15 
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
