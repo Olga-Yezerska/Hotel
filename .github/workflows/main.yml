@@ -57,5 +57,5 @@ jobs:
       - uses: akhileshns/heroku-deploy@v3.13.15
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+          heroku_app_name: "hotel-system"
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
